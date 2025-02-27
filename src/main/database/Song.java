@@ -22,7 +22,6 @@ public class Song {
         return this.album;
     }
 
-    
     public int getRating() {
         return rating;
     }
