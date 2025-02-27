@@ -1,42 +1,44 @@
 package main.database;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Album {
-    final private String title;
-    final private String artist;
-    final private String genre;
-    final private Integer year;
-    final private ArrayList<String> songs;
+    private final String title;
+    private final String artist;
+    private final String genre;
+    private final int year;
+    private final List<Song> songs;
 
-    public Album(String title, String artist, String genre, Integer year, ArrayList<String> songs) {
-         this.title = title;
-         this.artist = artist;
-         this.genre = genre;
-         this.year = year;
-         // Pass in a reference to song names stored as strings in list, then those can be looked up for the objects
-         this.songs = songs;
+    public Album(String title, String artist, String genre, int year) {
+        this.title = title;
+        this.artist = artist;
+        this.genre = genre;
+        this.year = year;
+        this.songs = new ArrayList<>();
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getArtist() {
-        return this.artist;
+        return artist;
     }
 
     public String getGenre() {
-        return this.genre;
+        return genre;
     }
 
-    public Integer getYear() {
-        return this.year;
+    public int getYear() {
+        return year;
     }
 
-    public ArrayList<String> getSongs() {
-        // return deep copy of songs list so it can't be manipulated after creation
-        return new ArrayList<>(this.songs);
+    public void addSong(Song song) {
+        songs.add(song);
     }
 
+    public List<Song> getSongs() {
+        return new ArrayList<>(songs);
+    }
 }
