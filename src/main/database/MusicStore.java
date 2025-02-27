@@ -27,7 +27,7 @@ public class MusicStore {
                 }
                 String albumTitle = parts[0].trim();
                 String artist = parts[1].trim();
-                String albumFileName = albumTitle + "_" + artist + ".txt";
+                String albumFileName = "src/test/albums/" + albumTitle + "_" + artist + ".txt";
                 loadSingleAlbum(albumFileName);
             }
         }
