@@ -27,7 +27,7 @@ public class MusicStore {
                 }
                 String albumTitle = parts[0].trim();
                 String artist = parts[1].trim();
-                String albumFileName = "src/test/albums/" + albumTitle + "_" + artist + ".txt";
+                String albumFileName = albumTitle + "_" + artist + ".txt";
                 loadSingleAlbum(albumFileName);
             }
         }
@@ -90,5 +90,16 @@ public class MusicStore {
             all.addAll(list);
         }
         return all;
+  
+    }
+    // Added helper methods to update internal maps (A.D)
+    public void addAlbum(Album album) {
+        albums.put(album.getTitle(), album);
+    }
+
+    public void addSong(Song song) {
+        String songTitle = song.getTitle();
+        // Add song to the songs maps(A.D)
+        songs.computeIfAbsent(songTitle, k -> new ArrayList<>()).add(song);
     }
 }
