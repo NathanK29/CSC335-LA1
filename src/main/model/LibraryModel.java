@@ -4,10 +4,10 @@ import main.database.*;
 import java.util.*;
 
 public class LibraryModel {
-    private List<Song> userLibrary; 
-    private Map<String, Playlist> playlists; 
-    private List<Song> favoriteSongs; 
-    private MusicStore musicStore; 
+    private List<Song> userLibrary;
+    private Map<String, Playlist> playlists;
+    private List<Song> favoriteSongs;
+    private MusicStore musicStore;
 
     public LibraryModel(MusicStore musicStore) {
         this.musicStore = musicStore;
@@ -18,6 +18,7 @@ public class LibraryModel {
 
     public void addSongToLibrary(Song song) {
         if (musicStore.getAllSongs().contains(song)) {
+            System.out.println("added " + song);
             userLibrary.add(song);
         }
     }
@@ -88,8 +89,49 @@ public class LibraryModel {
         return new ArrayList<>(playlists.values());
     }
 
+    public Playlist findPlaylistByName(String name) {
+        return playlists.get(name);
+    }
 
     public List<Song> getFavoriteSongs() {
         return new ArrayList<>(favoriteSongs);
+    }
+
+    public List<Song> searchSongsByArtist(String artist) {
+        List<Song> results = new ArrayList<>();
+        for (Song song : userLibrary) {
+            if (song.getAlbum().getArtist().equalsIgnoreCase(artist)) {
+                results.add(song);
+            }
+        }
+        return results;
+    }
+
+    public List<Album> searchAlbumsByArtist(String artist) {
+        // We only store songs in userLibrary, so gather distinct albums
+        List<Album> results = new ArrayList<>();
+        for (Song song : userLibrary) {
+            Album album = song.getAlbum();
+            if (album.getArtist().equalsIgnoreCase(artist) && !results.contains(album)) {
+                results.add(album);
+            }
+        }
+        return results;
+    }
+
+    public List<Album> getAllAlbumsInLibrary() {
+        Set<Album> albumSet = new HashSet<>();
+        for (Song s : userLibrary) {
+            albumSet.add(s.getAlbum());
+        }
+        return new ArrayList<>(albumSet);
+    }
+
+    public List<String> getAllArtistsInLibrary() {
+        Set<String> artistSet = new HashSet<>();
+        for (Song s : userLibrary) {
+            artistSet.add(s.getAlbum().getArtist());
+        }
+        return new ArrayList<>(artistSet);
     }
 }
