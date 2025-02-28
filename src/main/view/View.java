@@ -28,72 +28,103 @@ public class View {
         do {
             printMenu();
             command = scanner.nextLine().trim().toLowerCase();
-            switch (command) {
-                case "searchstore":
-                    searchStore();
-                    break;
-                case "searchlibrary":
-                    searchLibrary();
-                    break;
-                case "addsong":
-                    addSongFromStore();
-                    break;
-                case "addalbum":
-                    addAlbumFromStore();
-                    break;
-                case "createplaylist":
-                    createPlaylist();
-                    break;
-                case "addtoplaylist":
-                    addSongToPlaylist();
-                    break;
-                case "favorite":
-                    favoriteSong();
-                    break;
-                case "rate":
-                    rateSong();
-                    break;
-                case "listartists":
-                    listArtists();
-                    break;
-                case "listalbums":
-                    listAlbums();
-                    break;
-                case "listlibrary":
-                    listLibrary();
-                    break;
-                case "listplaylists":
-                    listPlaylists();
-                    break;
-                case "listfavorites":
-                    listFavorites();
-                    break;
-                case "exit":
-                    System.out.println("Exiting. Goodbye!");
-                    break;
-                default:
-                    System.out.println("Unrecognized command.");
-            }
-        } while (!command.equals("exit"));
+            handleCommand(command);
+        } while (!command.equals("exit") && !command.equals("14"));
     }
 
     private void printMenu() {
         System.out.println("\nCommands:");
-        System.out.println("  searchstore     - Search the store (song/album by title or artist)");
-        System.out.println("  searchlibrary   - Search songs/albums in your library (title or artist)");
-        System.out.println("  addsong         - Add a song from the store to your library");
-        System.out.println("  addalbum        - Add an album from the store to your library");
-        System.out.println("  createplaylist  - Create a new playlist");
-        System.out.println("  addtoplaylist   - Add a library song to a playlist");
-        System.out.println("  favorite        - Mark a library song as favorite");
-        System.out.println("  rate            - Rate a library song (1-5)");
-        System.out.println("  listlibrary     - List all songs in your library");
-        System.out.println("  listplaylists   - List all playlists");
-        System.out.println("  listartists     - List all artists in your library");
-        System.out.println("  listalbums      - List all albums in your library");
-        System.out.println("  listfavorites   - List favorite songs");
-        System.out.println("  exit            - Quit");
-        System.out.print("Enter command: ");
+        System.out.println("  1) searchstore     - Search the store (song/album by title or artist)");
+        System.out.println("  2) searchlibrary   - Search songs/albums in your library (title or artist)");
+        System.out.println("  3) addsong         - Add a song from the store to your library");
+        System.out.println("  4) addalbum        - Add an album from the store to your library");
+        System.out.println("  5) createplaylist  - Create a new playlist");
+        System.out.println("  6) addtoplaylist   - Add a library song to a playlist");
+        System.out.println("  7) favorite        - Mark a library song as favorite");
+        System.out.println("  8) rate            - Rate a library song (1-5)");
+        System.out.println("  9) listlibrary     - List all songs in your library");
+        System.out.println(" 10) listplaylists   - List all playlists");
+        System.out.println(" 11) listartists     - List all artists in your library");
+        System.out.println(" 12) listalbums      - List all albums in your library");
+        System.out.println(" 13) listfavorites   - List favorite songs");
+        System.out.println(" 14) exit            - Quit");
+        System.out.print("Enter command (number or name): ");
+    }
+
+    private void handleCommand(String command) {
+        switch (command) {
+            case "1":
+            case "searchstore":
+                searchStore();
+                break;
+            case "2":
+            case "searchlibrary":
+                searchLibrary();
+                break;
+            case "3":
+            case "addsong":
+                addSongFromStore();
+                break;
+            case "4":
+            case "addalbum":
+                addAlbumFromStore();
+                break;
+            case "5":
+            case "createplaylist":
+                createPlaylist();
+                break;
+            case "6":
+            case "addtoplaylist":
+                addSongToPlaylist();
+                break;
+            case "7":
+            case "favorite":
+                favoriteSong();
+                break;
+            case "8":
+            case "rate":
+                rateSong();
+                break;
+            case "9":
+            case "listlibrary":
+                listLibrary();
+                break;
+            case "10":
+            case "listplaylists":
+                listPlaylists();
+                break;
+            case "11":
+            case "listartists":
+                listArtists();
+                break;
+            case "12":
+            case "listalbums":
+                listAlbums();
+                break;
+            case "13":
+            case "listfavorites":
+                listFavorites();
+                break;
+            case "14":
+            case "exit":
+                System.out.println("Exiting. Goodbye!");
+                break;
+            default:
+                System.out.println("Unrecognized command.");
+        }
+    }
+
+    private void goBackToMainMenu() {
+        System.out.println("\nWhat would you like to do next?");
+        System.out.println("  1) Go back to the main menu");
+        System.out.println("  2) Exit");
+        System.out.print("Enter choice (1 or 2): ");
+        String choice = scanner.nextLine().trim();
+        if (choice.equals("2")) {
+            System.out.println("Exiting. Goodbye!");
+            System.exit(0); // Exit the program
+        }
+        // If choice is 1, the loop in `start()` will return to the main menu
     }
 
     private void searchStore() {
@@ -128,6 +159,7 @@ public class View {
             default:
                 System.out.println("Invalid choice.");
         }
+        goBackToMainMenu();
     }
 
     private void searchLibrary() {
@@ -171,6 +203,201 @@ public class View {
             default:
                 System.out.println("Invalid choice.");
         }
+        goBackToMainMenu();
+    }
+
+    private void addSongFromStore() {
+        System.out.print("Enter song title to find in store: ");
+        String title = scanner.nextLine();
+        List<Song> found = musicStore.findSongsByTitle(title);
+        if (found.isEmpty()) {
+            System.out.println("No song with that title in the store.");
+        } else {
+            if (found.size() > 1) {
+                System.out.println("Multiple songs found:");
+                for (int i = 0; i < found.size(); i++) {
+                    Song s = found.get(i);
+                    System.out.println(i + ") " + s.getTitle() + " by " + s.getAlbum().getArtist()
+                            + " (Album: " + s.getAlbum().getTitle() + ")");
+                }
+                System.out.print("Choose a song index: ");
+                int index = Integer.parseInt(scanner.nextLine());
+                if (index < 0 || index >= found.size()) {
+                    System.out.println("Invalid choice.");
+                } else {
+                    Song chosen = found.get(index);
+                    libraryModel.addSongToLibrary(chosen);
+                    System.out.println("Added '" + chosen.getTitle() + "' to your library.");
+                }
+            } else {
+                Song chosen = found.get(0);
+                libraryModel.addSongToLibrary(chosen);
+                System.out.println("Added '" + chosen.getTitle() + "' to your library.");
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void addAlbumFromStore() {
+        System.out.print("Enter album title to find in store: ");
+        String title = scanner.nextLine();
+        List<Album> found = musicStore.findAlbumsByTitle(title);
+        if (found.isEmpty()) {
+            System.out.println("No album with that title in the store.");
+        } else {
+            if (found.size() > 1) {
+                System.out.println("Multiple albums found:");
+                for (int i = 0; i < found.size(); i++) {
+                    Album a = found.get(i);
+                    System.out.println(i + ") " + a.getTitle() + " by " + a.getArtist());
+                }
+                System.out.print("Choose an album index: ");
+                int index = Integer.parseInt(scanner.nextLine());
+                if (index < 0 || index >= found.size()) {
+                    System.out.println("Invalid choice.");
+                } else {
+                    Album chosen = found.get(index);
+                    libraryModel.addAlbumToLibrary(chosen);
+                    System.out.println("Added album '" + chosen.getTitle() + "' to your library.");
+                }
+            } else {
+                Album chosen = found.get(0);
+                libraryModel.addAlbumToLibrary(chosen);
+                System.out.println("Added album '" + chosen.getTitle() + "' to your library.");
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void createPlaylist() {
+        System.out.print("Enter playlist name: ");
+        String playlistName = scanner.nextLine();
+        libraryModel.createPlaylist(playlistName);
+        System.out.println("Created playlist: " + playlistName);
+        goBackToMainMenu();
+    }
+
+    private void addSongToPlaylist() {
+        System.out.print("Enter playlist name: ");
+        String playlistName = scanner.nextLine();
+        System.out.print("Enter song title (must already be in library): ");
+        String songTitle = scanner.nextLine();
+        Song found = pickSongFromLibrary(songTitle);
+        if (found == null) {
+            System.out.println("That song isn't in your library.");
+        } else {
+            libraryModel.addSongToPlaylist(playlistName, found);
+            System.out.println("Added '" + found.getTitle() + "' to playlist '" + playlistName + "'.");
+        }
+        goBackToMainMenu();
+    }
+
+    private void favoriteSong() {
+        System.out.print("Enter song title to favorite: ");
+        String title = scanner.nextLine();
+        Song found = pickSongFromLibrary(title);
+        if (found == null) {
+            System.out.println("Song not found in your library.");
+        } else {
+            libraryModel.markSongAsFavorite(found);
+            System.out.println("Marked '" + found.getTitle() + "' as favorite.");
+        }
+        goBackToMainMenu();
+    }
+
+    private void rateSong() {
+        System.out.print("Enter song title to rate: ");
+        String title = scanner.nextLine();
+        Song found = pickSongFromLibrary(title);
+        if (found == null) {
+            System.out.println("Song not found in your library.");
+        } else {
+            System.out.print("Enter rating (1-5): ");
+            int rating;
+            try {
+                rating = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number.");
+                return;
+            }
+            try {
+                libraryModel.rateSong(found, rating);
+                System.out.println("Rated '" + found.getTitle() + "' with " + rating + ".");
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void listLibrary() {
+        List<Song> songs = libraryModel.getAllSongs();
+        if (songs.isEmpty()) {
+            System.out.println("Your library is empty.");
+        } else {
+            System.out.println("Your library songs:");
+            for (Song s : songs) {
+                System.out.println(" - " + s.getTitle() + " (Album: " + s.getAlbum().getTitle() + ")");
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void listArtists() {
+        List<String> artists = libraryModel.getAllArtistsInLibrary();
+        if (artists.isEmpty()) {
+            System.out.println("No artists in your library.");
+        } else {
+            System.out.println("All artists in your library:");
+            for (String artist : artists) {
+                System.out.println(" - " + artist);
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void listAlbums() {
+        List<Album> albums = libraryModel.getAllAlbumsInLibrary();
+        if (albums.isEmpty()) {
+            System.out.println("No albums in your library.");
+        } else {
+            System.out.println("All albums in your library:");
+            for (Album alb : albums) {
+                System.out.println(" - " + alb.getTitle() + " by " + alb.getArtist());
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void listPlaylists() {
+        List<Playlist> pls = libraryModel.getAllPlaylists();
+        if (pls.isEmpty()) {
+            System.out.println("No playlists created yet.");
+        } else {
+            System.out.println("Your playlists:");
+            for (Playlist p : pls) {
+                System.out.println(" - " + p.getName() + " (" + p.getSongs().size() + " songs)");
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private void listFavorites() {
+        List<Song> favs = libraryModel.getFavoriteSongs();
+        if (favs.isEmpty()) {
+            System.out.println("No favorite songs yet.");
+        } else {
+            System.out.println("Favorite songs:");
+            for (Song s : favs) {
+                System.out.println(" - " + s.getTitle() + " (Album: " + s.getAlbum().getTitle() + ")");
+            }
+        }
+        goBackToMainMenu();
+    }
+
+    private Song pickSongFromLibrary(String title) {
+        List<Song> found = libraryModel.searchSongsByTitle(title);
+        return found.isEmpty() ? null : found.get(0);
     }
 
     private void printPlaylistDetails(Playlist p) {
@@ -233,191 +460,6 @@ public class View {
         for (Album a : albums) {
             System.out.println(" - " + a.getTitle() + " by " + a.getArtist());
         }
-    }
-
-    private void addSongFromStore() {
-        System.out.print("Enter song title to find in store: ");
-        String title = scanner.nextLine();
-        List<Song> found = musicStore.findSongsByTitle(title);
-        if (found.isEmpty()) {
-            System.out.println("No song with that title in the store.");
-            return;
-        }
-        if (found.size() > 1) {
-            System.out.println("Multiple songs found:");
-            for (int i = 0; i < found.size(); i++) {
-                Song s = found.get(i);
-                System.out.println(i + ") " + s.getTitle() + " by " + s.getAlbum().getArtist()
-                        + " (Album: " + s.getAlbum().getTitle() + ")");
-            }
-            System.out.print("Choose a song index: ");
-            int index = Integer.parseInt(scanner.nextLine());
-            if (index < 0 || index >= found.size()) {
-                System.out.println("Invalid choice.");
-                return;
-            }
-            Song chosen = found.get(index);
-            libraryModel.addSongToLibrary(chosen);
-            System.out.println("Added '" + chosen.getTitle() + "' to your library.");
-        } else {
-            Song chosen = found.get(0);
-            libraryModel.addSongToLibrary(chosen);
-            System.out.println("Added '" + chosen.getTitle() + "' to your library.");
-        }
-    }
-
-    private void addAlbumFromStore() {
-        System.out.print("Enter album title to find in store: ");
-        String title = scanner.nextLine();
-        List<Album> found = musicStore.findAlbumsByTitle(title);
-        if (found.isEmpty()) {
-            System.out.println("No album with that title in the store.");
-            return;
-        }
-        if (found.size() > 1) {
-            System.out.println("Multiple albums found:");
-            for (int i = 0; i < found.size(); i++) {
-                Album a = found.get(i);
-                System.out.println(i + ") " + a.getTitle() + " by " + a.getArtist());
-            }
-            System.out.print("Choose an album index: ");
-            int index = Integer.parseInt(scanner.nextLine());
-            if (index < 0 || index >= found.size()) {
-                System.out.println("Invalid choice.");
-                return;
-            }
-            Album chosen = found.get(index);
-            libraryModel.addAlbumToLibrary(chosen);
-            System.out.println("Added album '" + chosen.getTitle() + "' to your library.");
-        } else {
-            Album chosen = found.get(0);
-            libraryModel.addAlbumToLibrary(chosen);
-            System.out.println("Added album '" + chosen.getTitle() + "' to your library.");
-        }
-    }
-
-    private void createPlaylist() {
-        System.out.print("Enter playlist name: ");
-        String playlistName = scanner.nextLine();
-        libraryModel.createPlaylist(playlistName);
-        System.out.println("Created playlist: " + playlistName);
-    }
-
-    private void addSongToPlaylist() {
-        System.out.print("Enter playlist name: ");
-        String playlistName = scanner.nextLine();
-        System.out.print("Enter song title (must already be in library): ");
-        String songTitle = scanner.nextLine();
-        Song found = pickSongFromLibrary(songTitle);
-        if (found == null) {
-            System.out.println("That song isn't in your library.");
-            return;
-        }
-        libraryModel.addSongToPlaylist(playlistName, found);
-        System.out.println("Added '" + found.getTitle() + "' to playlist '" + playlistName + "'.");
-    }
-
-    private void favoriteSong() {
-        System.out.print("Enter song title to favorite: ");
-        String title = scanner.nextLine();
-        Song found = pickSongFromLibrary(title);
-        if (found == null) {
-            System.out.println("Song not found in your library.");
-            return;
-        }
-        libraryModel.markSongAsFavorite(found);
-        System.out.println("Marked '" + found.getTitle() + "' as favorite.");
-    }
-
-    private void rateSong() {
-        System.out.print("Enter song title to rate: ");
-        String title = scanner.nextLine();
-        Song found = pickSongFromLibrary(title);
-        if (found == null) {
-            System.out.println("Song not found in your library.");
-            return;
-        }
-        System.out.print("Enter rating (1-5): ");
-        int rating;
-        try {
-            rating = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid number.");
-            return;
-        }
-        try {
-            libraryModel.rateSong(found, rating);
-            System.out.println("Rated '" + found.getTitle() + "' with " + rating + ".");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-    }
-
-    private void listLibrary() {
-        List<Song> songs = libraryModel.getAllSongs();
-        if (songs.isEmpty()) {
-            System.out.println("Your library is empty.");
-        } else {
-            System.out.println("Your library songs:");
-            for (Song s : songs) {
-                System.out.println(" - " + s.getTitle() + " (Album: " + s.getAlbum().getTitle() + ")");
-            }
-        }
-    }
-
-    private void listArtists() {
-        List<String> artists = libraryModel.getAllArtistsInLibrary();
-        if (artists.isEmpty()) {
-            System.out.println("No artists in your library.");
-        } else {
-            System.out.println("All artists in your library:");
-            for (String artist : artists) {
-                System.out.println(" - " + artist);
-            }
-        }
-    }
-
-    private void listAlbums() {
-        List<Album> albums = libraryModel.getAllAlbumsInLibrary();
-        if (albums.isEmpty()) {
-            System.out.println("No albums in your library.");
-        } else {
-            System.out.println("All albums in your library:");
-            for (Album alb : albums) {
-                System.out.println(" - " + alb.getTitle() + " by " + alb.getArtist());
-            }
-        }
-    }
-
-    private void listPlaylists() {
-        List<Playlist> pls = libraryModel.getAllPlaylists();
-        if (pls.isEmpty()) {
-            System.out.println("No playlists created yet.");
-        } else {
-            System.out.println("Your playlists:");
-            for (Playlist p : pls) {
-                System.out.println(" - " + p.getName() + " (" + p.getSongs().size() + " songs)");
-            }
-        }
-    }
-
-
-
-    private void listFavorites() {
-        List<Song> favs = libraryModel.getFavoriteSongs();
-        if (favs.isEmpty()) {
-            System.out.println("No favorite songs yet.");
-        } else {
-            System.out.println("Favorite songs:");
-            for (Song s : favs) {
-                System.out.println(" - " + s.getTitle() + " (Album: " + s.getAlbum().getTitle() + ")");
-            }
-        }
-    }
-
-    private Song pickSongFromLibrary(String title) {
-        List<Song> found = libraryModel.searchSongsByTitle(title);
-        return found.isEmpty() ? null : found.get(0);
     }
 
     public static void main(String[] args) {
