@@ -4,10 +4,10 @@ import main.database.*;
 import java.util.*;
 
 public class LibraryModel {
-    private List<Song> userLibrary; 
-    private Map<String, Playlist> playlists; 
-    private List<Song> favoriteSongs; 
-    private MusicStore musicStore; 
+    private List<Song> userLibrary;
+    private Map<String, Playlist> playlists;
+    private List<Song> favoriteSongs;
+    private MusicStore musicStore;
 
     public LibraryModel(MusicStore musicStore) {
         this.musicStore = musicStore;
@@ -89,6 +89,9 @@ public class LibraryModel {
         return new ArrayList<>(playlists.values());
     }
 
+    public Playlist findPlaylistByName(String name) {
+        return playlists.get(name);
+    }
 
     public List<Song> getFavoriteSongs() {
         return new ArrayList<>(favoriteSongs);
@@ -116,4 +119,19 @@ public class LibraryModel {
         return results;
     }
 
+    public List<Album> getAllAlbumsInLibrary() {
+        Set<Album> albumSet = new HashSet<>();
+        for (Song s : userLibrary) {
+            albumSet.add(s.getAlbum());
+        }
+        return new ArrayList<>(albumSet);
+    }
+
+    public List<String> getAllArtistsInLibrary() {
+        Set<String> artistSet = new HashSet<>();
+        for (Song s : userLibrary) {
+            artistSet.add(s.getAlbum().getArtist());
+        }
+        return new ArrayList<>(artistSet);
+    }
 }

@@ -53,6 +53,12 @@ public class View {
                 case "rate":
                     rateSong();
                     break;
+                case "listartists":
+                    listArtists();
+                    break;
+                case "listalbums":
+                    listAlbums();
+                    break;
                 case "listlibrary":
                     listLibrary();
                     break;
@@ -83,6 +89,8 @@ public class View {
         System.out.println("  rate            - Rate a library song (1-5)");
         System.out.println("  listlibrary     - List all songs in your library");
         System.out.println("  listplaylists   - List all playlists");
+        System.out.println("  listartists     - List all artists in your library");
+        System.out.println("  listalbums      - List all albums in your library");
         System.out.println("  listfavorites   - List favorite songs");
         System.out.println("  exit            - Quit");
         System.out.print("Enter command: ");
@@ -128,7 +136,8 @@ public class View {
         System.out.println(" 2) Song artist");
         System.out.println(" 3) Album title");
         System.out.println(" 4) Album artist");
-        System.out.print("Enter choice (1-4): ");
+        System.out.println(" 5) Playlist name");
+        System.out.print("Enter choice (1-5): ");
         String choice = scanner.nextLine().trim();
 
         System.out.print("Enter your search string: ");
@@ -151,8 +160,29 @@ public class View {
                 List<Album> albumsArtist = libraryModel.searchAlbumsByArtist(query);
                 printLibraryAlbums(albumsArtist);
                 break;
+            case "5":
+                Playlist p = libraryModel.findPlaylistByName(query);
+                if (p == null) {
+                    System.out.println("No playlist found with that name.");
+                } else {
+                    printPlaylistDetails(p);
+                }
+                break;
             default:
                 System.out.println("Invalid choice.");
+        }
+    }
+
+    private void printPlaylistDetails(Playlist p) {
+        System.out.println("Playlist: " + p.getName());
+        List<Song> songs = p.getSongs();
+        if (songs.isEmpty()) {
+            System.out.println("  (No songs in this playlist.)");
+        } else {
+            for (Song s : songs) {
+                System.out.println("  - " + s.getTitle()
+                        + " by " + s.getAlbum().getArtist());
+            }
         }
     }
 
@@ -335,6 +365,30 @@ public class View {
         }
     }
 
+    private void listArtists() {
+        List<String> artists = libraryModel.getAllArtistsInLibrary();
+        if (artists.isEmpty()) {
+            System.out.println("No artists in your library.");
+        } else {
+            System.out.println("All artists in your library:");
+            for (String artist : artists) {
+                System.out.println(" - " + artist);
+            }
+        }
+    }
+
+    private void listAlbums() {
+        List<Album> albums = libraryModel.getAllAlbumsInLibrary();
+        if (albums.isEmpty()) {
+            System.out.println("No albums in your library.");
+        } else {
+            System.out.println("All albums in your library:");
+            for (Album alb : albums) {
+                System.out.println(" - " + alb.getTitle() + " by " + alb.getArtist());
+            }
+        }
+    }
+
     private void listPlaylists() {
         List<Playlist> pls = libraryModel.getAllPlaylists();
         if (pls.isEmpty()) {
@@ -346,6 +400,8 @@ public class View {
             }
         }
     }
+
+
 
     private void listFavorites() {
         List<Song> favs = libraryModel.getFavoriteSongs();
