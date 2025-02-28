@@ -13,8 +13,8 @@ public class MusicStoreTest {
     @Test
     public void testEmptyInitialization() {
         MusicStore store = new MusicStore();
-        assertTrue(store.getAllAlbums().isEmpty(), "No albums expected at initialization.");
-        assertTrue(store.getAllSongs().isEmpty(), "No songs expected at initialization.");
+        assertTrue(store.getAllAlbums().isEmpty());
+        assertTrue(store.getAllSongs().isEmpty());
     }
 
     @Test
@@ -22,7 +22,7 @@ public class MusicStoreTest {
         MusicStore store = new MusicStore();
         try {
             store.loadAllAlbums("src/test/albums/albums.txt");
-            assertTrue(store.getAllAlbums().size() >= 3, "Expected at least three albums.");
+            assertTrue(store.getAllAlbums().size() >= 3);
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -33,12 +33,15 @@ public class MusicStoreTest {
         MusicStore store = new MusicStore();
         try {
             store.loadAllAlbums("src/test/albums/albums.txt");
-            Album rush = store.findAlbumByTitle("A Rush of Blood to the Head");
-            assertNotNull(rush, "Album not found: A Rush of Blood to the Head.");
-            assertEquals("Coldplay", rush.getArtist(), "Incorrect artist for A Rush of Blood to the Head.");
-            Album begin = store.findAlbumByTitle("Begin Again");
-            assertNotNull(begin, "Album not found: Begin Again.");
-            assertEquals("Norah Jones", begin.getArtist(), "Incorrect artist for Begin Again.");
+            List<Album> rushAlbums = store.findAlbumsByTitle("A Rush of Blood to the Head");
+            assertFalse(rushAlbums.isEmpty());
+            Album rush = rushAlbums.get(0);
+            assertEquals("Coldplay", rush.getArtist());
+
+            List<Album> beginAlbums = store.findAlbumsByTitle("Begin Again");
+            assertFalse(beginAlbums.isEmpty());
+            Album begin = beginAlbums.get(0);
+            assertEquals("Norah Jones", begin.getArtist());
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -50,11 +53,11 @@ public class MusicStoreTest {
         try {
             store.loadAllAlbums("src/test/albums/albums.txt");
             List<Song> scientist = store.findSongsByTitle("The Scientist");
-            assertFalse(scientist.isEmpty(), "Song not found: The Scientist.");
+            assertFalse(scientist.isEmpty());
             List<Song> holdOn = store.findSongsByTitle("Hold On");
-            assertFalse(holdOn.isEmpty(), "Song not found: Hold On.");
+            assertFalse(holdOn.isEmpty());
             List<Song> begin = store.findSongsByTitle("Begin Again");
-            assertFalse(begin.isEmpty(), "Song not found: Begin Again.");
+            assertFalse(begin.isEmpty());
         } catch (IOException e) {
             fail(e.getMessage());
         }
