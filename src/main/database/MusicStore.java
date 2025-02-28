@@ -27,7 +27,7 @@ public class MusicStore {
                 }
                 String albumTitle = parts[0].trim();
                 String artist = parts[1].trim();
-                String albumFileName = albumTitle + "_" + artist + ".txt";
+                String albumFileName = "src/test/albums/" +  albumTitle + "_" + artist + ".txt";
                 loadSingleAlbum(albumFileName);
             }
         }
@@ -67,8 +67,14 @@ public class MusicStore {
         }
     }
 
-    public Album findAlbumByTitle(String title) {
-        return this.albums.get(title);
+    public List<Album> findAlbumsByTitle(String title) {
+        List<Album> results = new ArrayList<>();
+        for (Album album : albums.values()) {
+            if (album.getTitle().equalsIgnoreCase(title)) {
+                results.add(album);
+            }
+        }
+        return results;
     }
 
     public List<Song> findSongsByTitle(String title) {
@@ -102,4 +108,27 @@ public class MusicStore {
         // Add song to the songs maps(A.D)
         songs.computeIfAbsent(songTitle, k -> new ArrayList<>()).add(song);
     }
+
+    public List<Song> findSongsByArtist(String artist) {
+        List<Song> results = new ArrayList<>();
+        for (List<Song> songList : songs.values()) {
+            for (Song s : songList) {
+                if (s.getAlbum().getArtist().equalsIgnoreCase(artist)) {
+                    results.add(s);
+                }
+            }
+        }
+        return results;
+    }
+
+    public List<Album> findAlbumsByArtist(String artist) {
+        List<Album> results = new ArrayList<>();
+        for (Album album : albums.values()) {
+            if (album.getArtist().equalsIgnoreCase(artist)) {
+                results.add(album);
+            }
+        }
+        return results;
+    }
+
 }

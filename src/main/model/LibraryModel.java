@@ -18,6 +18,7 @@ public class LibraryModel {
 
     public void addSongToLibrary(Song song) {
         if (musicStore.getAllSongs().contains(song)) {
+            System.out.println("added " + song);
             userLibrary.add(song);
         }
     }
@@ -92,4 +93,27 @@ public class LibraryModel {
     public List<Song> getFavoriteSongs() {
         return new ArrayList<>(favoriteSongs);
     }
+
+    public List<Song> searchSongsByArtist(String artist) {
+        List<Song> results = new ArrayList<>();
+        for (Song song : userLibrary) {
+            if (song.getAlbum().getArtist().equalsIgnoreCase(artist)) {
+                results.add(song);
+            }
+        }
+        return results;
+    }
+
+    public List<Album> searchAlbumsByArtist(String artist) {
+        // We only store songs in userLibrary, so gather distinct albums
+        List<Album> results = new ArrayList<>();
+        for (Song song : userLibrary) {
+            Album album = song.getAlbum();
+            if (album.getArtist().equalsIgnoreCase(artist) && !results.contains(album)) {
+                results.add(album);
+            }
+        }
+        return results;
+    }
+
 }
