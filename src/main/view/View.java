@@ -271,12 +271,16 @@ public class View {
 
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
-        String playlistName = scanner.nextLine();
-        libraryModel.createPlaylist(playlistName);
-        System.out.println("Created playlist: " + playlistName);
+        String playlistName = scanner.nextLine().trim();
+
+        boolean success = libraryModel.createPlaylist(playlistName);
+        if (!success) {
+            System.out.println("This playlist already exists. Please choose a different name.");
+        } else {
+            System.out.println("Created playlist: " + playlistName);
+        }
         goBackToMainMenu();
     }
-
     private void addSongToPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine();

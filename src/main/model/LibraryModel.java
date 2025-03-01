@@ -31,8 +31,12 @@ public class LibraryModel {
         }
     }
 
-    public void createPlaylist(String name) {
-        playlists.putIfAbsent(name, new Playlist(name));
+    public boolean createPlaylist(String name) {
+        if (playlists.containsKey(name)) {
+            return false;
+        }
+        playlists.put(name, new Playlist(name));
+        return true; 
     }
 
 
