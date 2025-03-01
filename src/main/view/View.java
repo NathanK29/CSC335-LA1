@@ -10,6 +10,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+    AI-GENERATED SKELETON:
+    We used an AI tool to quickly create a basic command-driven structure for this View class,
+    including methods for searching the store, adding songs/albums, creating playlists,
+    and listing favorites. Afterward, we reviewed and customized it to align with our
+    assignment’s requirements, ensuring the View only handles user interaction
+    and delegates data operations to the Model.
+*/
 public class View {
 
     private final LibraryModel libraryModel;
