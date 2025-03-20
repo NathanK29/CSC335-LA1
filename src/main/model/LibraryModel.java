@@ -53,6 +53,12 @@ public class LibraryModel {
         }
     }
 
+    public void removeSongFromPlaylist(String playlistName, Song song) {
+        Playlist p = findPlaylistByName(playlistName);
+        if (p != null) {
+            p.removeSong(song);
+        }
+    }
 
     public void rateSong(Song song, int rating) {
         if (rating < 1 || rating > 5) {
