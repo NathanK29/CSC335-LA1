@@ -35,7 +35,7 @@ public class View {
     private void printMenu() {
         System.out.println("\nCommands:");
         System.out.println("  1) searchstore           - Search the store (song/album by title or artist)");
-        System.out.println("  2) searchlibrary         - Search songs/albums in your library (title or artist)");
+        System.out.println("  2) searchlibrary         - Search songs/albums/playlists in your library (title, artist, or playlist name)");
         System.out.println("  3) addsong               - Add a song from the store to your library");
         System.out.println("  4) addalbum              - Add an album from the store to your library");
         System.out.println("  5) createplaylist        - Create a new playlist");
