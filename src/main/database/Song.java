@@ -1,18 +1,19 @@
 package main.database;
 
-public class Song {
-    // This is all that's needed, the rest of the info can be retrieved from referencing the songs album
+import java.io.Serializable;
+
+public class Song implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String title;
     private Album album;
-    private int rating; // Rating from 1-5 (0 means unrated)(A.D)
+    private int rating;
     private boolean isFavorite;
-   
+
     public Song(String title, Album album) {
         this.title = title;
         this.album = album;
-        this.isFavorite = false; // Default to not a favorite (A.D)
+        this.isFavorite = false;
     }
-    
 
     public String getTitle() {
         return this.title;
@@ -22,7 +23,6 @@ public class Song {
         return this.album;
     }
 
-     
     public int getRating() {
         return rating;
     }
@@ -30,7 +30,6 @@ public class Song {
     public void setRating(int rating) {
         if (rating >= 1 && rating <= 5) {
             this.rating = rating;
-            // Automatically mark as favorite if rating is 5 (A.D)
             if (rating == 5) {
                 this.isFavorite = true;
             }
@@ -38,11 +37,11 @@ public class Song {
             throw new IllegalArgumentException("Rating must be between 1-5.");
         }
     }
-    
+
     public boolean isFavorite() {
         return isFavorite;
     }
-  
+
     public void setFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
     }

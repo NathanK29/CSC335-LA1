@@ -1,5 +1,7 @@
 package main.view;
 
+import main.auth.User;
+import main.auth.UserManager;
 import main.database.Album;
 import main.database.MusicStore;
 import main.database.Song;
@@ -12,18 +14,88 @@ import java.util.Scanner;
 
 public class View {
 
-    private final LibraryModel libraryModel;
-    private final MusicStore musicStore;
+    private MusicStore musicStore;
+    private LibraryModel libraryModel;
     private final Scanner scanner;
+    private final UserManager userManager;
+    private User currentUser;
 
-    public View(LibraryModel libraryModel, MusicStore musicStore) {
-        this.libraryModel = libraryModel;
+    public View(MusicStore musicStore, UserManager userManager) {
         this.musicStore = musicStore;
+        this.userManager = userManager;
         this.scanner = new Scanner(System.in);
     }
 
     public void start() {
         System.out.println("Welcome to Your Music Library!");
+        boolean authenticated = false;
+        while (!authenticated) {
+            System.out.println("Please choose an option:");
+            System.out.println("  1) Log In");
+            System.out.println("  2) Sign Up");
+            System.out.println("  3) Exit");
+            System.out.print("Enter choice: ");
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    authenticated = login();
+                    break;
+                case "2":
+                    authenticated = signUp();
+                    break;
+                case "3":
+                    System.out.println("Exiting. Goodbye!");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+        libraryModel = currentUser.getLibrary();
+        mainMenu();
+    }
+
+    private boolean login() {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine().trim();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine().trim();
+        User user = userManager.login(username, password);
+        if (user == null) {
+            System.out.println("Login failed. Incorrect username or password.");
+            return false;
+        } else {
+            currentUser = user;
+            System.out.println("Welcome back, " + currentUser.getUsername() + "!");
+            return true;
+        }
+    }
+
+    // Sign-up flow: log in or create new user (NK)
+    private boolean signUp() {
+        System.out.print("Choose a username: ");
+        String username = scanner.nextLine().trim();
+        System.out.print("Choose a password: ");
+        String password = scanner.nextLine().trim();
+        System.out.print("Confirm password: ");
+        String confirmPassword = scanner.nextLine().trim();
+        if (!password.equals(confirmPassword)) {
+            System.out.println("Passwords do not match.");
+            return false;
+        }
+        boolean success = userManager.signUp(username, password);
+        if (!success) {
+            System.out.println("Username already exists.");
+            return false;
+        } else {
+            // Automatically log in the new users
+            currentUser = userManager.login(username, password);
+            System.out.println("Account created. Welcome, " + currentUser.getUsername() + "!");
+            return true;
+        }
+    }
+
+    private void mainMenu() {
         String command;
         do {
             printMenu();
@@ -112,22 +184,11 @@ public class View {
                 break;
             case "15":
             case "exit":
+                currentUser.saveLibraryData();
                 System.out.println("Exiting. Goodbye!");
                 break;
             default:
                 System.out.println("Unrecognized command.");
-        }
-    }
-
-    private void goBackToMainMenu() {
-        System.out.println("\nWhat would you like to do next?");
-        System.out.println("  1) Go back to the main menu");
-        System.out.println("  2) Exit");
-        System.out.print("Enter choice (1 or 2): ");
-        String choice = scanner.nextLine().trim();
-        if (choice.equals("2")) {
-            System.out.println("Exiting. Goodbye!");
-            System.exit(0);
         }
     }
 
@@ -490,6 +551,19 @@ public class View {
         }
     }
 
+    private void goBackToMainMenu() {
+        System.out.println("\nWhat would you like to do next?");
+        System.out.println("  1) Go back to the main menu");
+        System.out.println("  2) Exit");
+        System.out.print("Enter choice (1 or 2): ");
+        String choice = scanner.nextLine().trim();
+        if (choice.equals("2")) {
+            currentUser.saveLibraryData();
+            System.out.println("Exiting. Goodbye!");
+            System.exit(0);
+        }
+    }
+
     public static void main(String[] args) {
         MusicStore store = new MusicStore();
         try {
@@ -498,8 +572,8 @@ public class View {
             System.out.println("Could not load albums from store: " + e.getMessage());
         }
 
-        LibraryModel model = new LibraryModel(store);
-        View view = new View(model, store);
+        UserManager userManager = new UserManager(store);
+        View view = new View(store, userManager);
         view.start();
     }
 }

@@ -1,11 +1,13 @@
 package main.model;
 
 import main.database.Song;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Playlist {
-    private String name; 
+public class Playlist implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String name;
     private List<Song> songs;
 
     public Playlist(String name) {
@@ -19,14 +21,12 @@ public class Playlist {
         }
     }
 
-
     public void removeSong(Song song) {
         songs.remove(song);
     }
 
-
     public List<Song> getSongs() {
-        return new ArrayList<>(songs); 
+        return new ArrayList<>(songs);
     }
 
     public String getName() {

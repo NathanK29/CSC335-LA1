@@ -1,9 +1,11 @@
 package main.database;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Album {
+public class Album implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String title;
     private final String artist;
     private final String genre;

@@ -1,19 +1,25 @@
 package main.model;
 
 import main.database.*;
+import java.io.Serializable;
 import java.util.*;
 
-public class LibraryModel {
+public class LibraryModel implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<Song> userLibrary;
     private Map<String, Playlist> playlists;
     private List<Song> favoriteSongs;
-    private MusicStore musicStore;
+    private transient MusicStore musicStore;
 
     public LibraryModel(MusicStore musicStore) {
         this.musicStore = musicStore;
         this.userLibrary = new ArrayList<>();
         this.playlists = new HashMap<>();
         this.favoriteSongs = new ArrayList<>();
+    }
+
+    public void setMusicStore(MusicStore musicStore) {
+        this.musicStore = musicStore;
     }
 
     public void addSongToLibrary(Song song) {
@@ -25,9 +31,7 @@ public class LibraryModel {
 
     public void addAlbumToLibrary(Album album) {
         for (Song song : album.getSongs()) {
-            if (musicStore.getAllSongs().contains(song)) {
-                userLibrary.add(song);
-            }
+            userLibrary.add(song);
         }
     }
 
@@ -36,16 +40,14 @@ public class LibraryModel {
             return false;
         }
         playlists.put(name, new Playlist(name));
-        return true; 
+        return true;
     }
-
 
     public void addSongToPlaylist(String playlistName, Song song) {
         if (playlists.containsKey(playlistName)) {
             playlists.get(playlistName).addSong(song);
         }
     }
-
 
     public void markSongAsFavorite(Song song) {
         if (!favoriteSongs.contains(song)) {
@@ -118,7 +120,6 @@ public class LibraryModel {
     }
 
     public List<Album> searchAlbumsByArtist(String artist) {
-        // We only store songs in userLibrary, so gather distinct albums
         List<Album> results = new ArrayList<>();
         for (Song song : userLibrary) {
             Album album = song.getAlbum();
