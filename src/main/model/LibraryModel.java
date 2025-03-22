@@ -164,6 +164,23 @@ public class LibraryModel implements Serializable {
         return sortedSongs;
     }
 
+    public void removeSongFromLibrary(Song song) {
+        if(userLibrary.contains(song)) {
+            userLibrary.remove(song);
+        }
+    }
+
+    public void removeAlbumFromLibrary(Album album) {
+        List<Song> songsToRemove = new ArrayList<>();
+        for (Song s : userLibrary) {
+            if (s.getAlbum().getTitle().equalsIgnoreCase(album.getTitle()) &&
+                    s.getAlbum().getArtist().equalsIgnoreCase(album.getArtist())) {
+                songsToRemove.add(s);
+            }
+        }
+        userLibrary.removeAll(songsToRemove);
+    }
+
     // Return songs sorted by rating ascending (NK)
     public List<Song> getSongsSortedByRating() {
         List<Song> sortedSongs = new ArrayList<>(userLibrary);
