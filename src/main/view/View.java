@@ -121,7 +121,8 @@ public class View {
         System.out.println(" 15) listfavorites         - List favorite songs");
         System.out.println(" 16) playsong              - Play a song from your library");
         System.out.println(" 17) listsortedsongs       - List songs sorted by a chosen criterion");
-        System.out.println(" 18) exit                  - Quit");
+        System.out.println(" 18) shuffle               - Shuffle songs (library or playlist)");
+        System.out.println(" 19) exit                  - Quit");
         System.out.print("Enter command (number or name): ");
     }
 
@@ -196,6 +197,10 @@ public class View {
                 sortSongs();
                 break;
             case "18":
+            case "shuffle":
+                shuffle();
+                break;
+            case "19":
             case "exit":
                 currentUser.saveLibraryData();
                 System.out.println("Exiting. Goodbye!");
@@ -204,6 +209,37 @@ public class View {
             default:
                 System.out.println("Unrecognized command.");
         }
+    }
+
+    private void shuffle() {
+        System.out.println("Shuffle options:");
+        System.out.println("  1) Shuffle library");
+        System.out.println("  2) Shuffle playlist");
+        System.out.print("Enter choice (1 or 2): ");
+        String choice = scanner.nextLine().trim();
+        if (choice.equals("1")) {
+            Iterable<Song> shuffled = libraryModel.getShuffledSongs();
+            System.out.println("Shuffled library songs:");
+            for (Song s : shuffled) {
+                System.out.println(" - " + s.getTitle() + " (Artist: " + s.getAlbum().getArtist() + ", Rating: " + s.getRating() + ")");
+            }
+        } else if (choice.equals("2")) {
+            System.out.print("Enter playlist name: ");
+            String pname = scanner.nextLine().trim();
+            Playlist p = libraryModel.findPlaylistByName(pname);
+            if (p == null) {
+                System.out.println("Playlist not found.");
+            } else {
+                Iterable<Song> shuffled = p.getShuffledSongs();
+                System.out.println("Shuffled songs from playlist '" + p.getName() + "':");
+                for (Song s : shuffled) {
+                    System.out.println(" - " + s.getTitle() + " (Artist: " + s.getAlbum().getArtist() + ", Rating: " + s.getRating() + ")");
+                }
+            }
+        } else {
+            System.out.println("Invalid choice.");
+        }
+        goBackToMainMenu();
     }
 
     private void removeFromLibrary() {
@@ -262,10 +298,8 @@ public class View {
         System.out.println("  4) Album artist");
         System.out.print("Enter choice (1-4): ");
         String choice = scanner.nextLine().trim();
-
         System.out.print("Enter your search string: ");
         String query = scanner.nextLine();
-
         switch (choice) {
             case "1":
                 List<Song> songsByTitle = musicStore.findSongsByTitle(query);
@@ -298,10 +332,8 @@ public class View {
         System.out.println("  5) Playlist name");
         System.out.print("Enter choice (1-5): ");
         String choice = scanner.nextLine().trim();
-
         System.out.print("Enter your search string: ");
         String query = scanner.nextLine();
-
         switch (choice) {
             case "1":
                 List<Song> songsTitle = libraryModel.searchSongsByTitle(query);

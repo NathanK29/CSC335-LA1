@@ -164,6 +164,12 @@ public class LibraryModel implements Serializable {
         return sortedSongs;
     }
 
+    public Iterable<Song> getShuffledSongs() {
+        List<Song> copy = new ArrayList<>(userLibrary);
+        Collections.shuffle(copy);
+        return copy;
+    }
+
     public void removeSongFromLibrary(Song song) {
         if(userLibrary.contains(song)) {
             userLibrary.remove(song);

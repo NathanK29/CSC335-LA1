@@ -3,6 +3,7 @@ package main.model;
 import main.database.Song;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Playlist implements Serializable {
@@ -27,6 +28,12 @@ public class Playlist implements Serializable {
 
     public List<Song> getSongs() {
         return new ArrayList<>(songs);
+    }
+
+    public Iterable<Song> getShuffledSongs() {
+        List<Song> copy = new ArrayList<>(songs);
+        Collections.shuffle(copy);
+        return copy;
     }
 
     public String getName() {
