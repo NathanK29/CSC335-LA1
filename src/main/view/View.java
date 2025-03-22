@@ -101,7 +101,7 @@ public class View {
             printMenu();
             command = scanner.nextLine().trim().toLowerCase();
             handleCommand(command);
-        } while (!command.equals("16") && !command.equals("exit"));
+        } while (true);
     }
 
     private void printMenu() {
@@ -121,7 +121,8 @@ public class View {
         System.out.println(" 13) listalbums            - List all albums in your library");
         System.out.println(" 14) listfavorites         - List favorite songs");
         System.out.println(" 15) playsong              - Play a song from your library");
-        System.out.println(" 16) exit                  - Quit");
+        System.out.println(" 16) listsortedsongs       - List songs sorted by title, artist, or rating in descending order");
+        System.out.println(" 17) exit                  - Quit");
         System.out.print("Enter command (number or name): ");
     }
 
@@ -188,6 +189,10 @@ public class View {
                 playSong();
                 break;
             case "16":
+            case "listsortedsongs":
+                sortSongs();
+                break;
+            case "17":
             case "exit":
                 currentUser.saveLibraryData();
                 System.out.println("Exiting. Goodbye!");
@@ -196,6 +201,39 @@ public class View {
             default:
                 System.out.println("Unrecognized command.");
         }
+    }
+
+    private void sortSongs() {
+        System.out.println("Choose sorting criterion:");
+        System.out.println("  1) Sort by song title");
+        System.out.println("  2) Sort by artist");
+        System.out.println("  3) Sort by rating");
+        System.out.print("Enter choice (1-3): ");
+        String choice = scanner.nextLine().trim();
+        List<Song> sortedSongs = null;
+        switch (choice) {
+            case "1":
+                sortedSongs = libraryModel.getSongsSortedByTitle();
+                break;
+            case "2":
+                sortedSongs = libraryModel.getSongsSortedByArtist();
+                break;
+            case "3":
+                sortedSongs = libraryModel.getSongsSortedByRating();
+                break;
+            default:
+                System.out.println("Invalid choice.");
+                return;
+        }
+        if (sortedSongs == null || sortedSongs.isEmpty()) {
+            System.out.println("No songs found in your library.");
+        } else {
+            System.out.println("Sorted songs:");
+            for (Song s : sortedSongs) {
+                System.out.println(" - " + s.getTitle() + " (Artist: " + s.getAlbum().getArtist() + ", Rating: " + s.getRating() + ")");
+            }
+        }
+        goBackToMainMenu();
     }
 
     private void searchStore() {
@@ -343,7 +381,6 @@ public class View {
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine().trim();
-
         boolean success = libraryModel.createPlaylist(playlistName);
         if (!success) {
             System.out.println("This playlist already exists. Please choose a different name.");
@@ -569,19 +606,21 @@ public class View {
             System.exit(0);
         }
     }
+
     @SuppressWarnings("unused")
-	private void playSong() { 
+    private void playSong() {
         System.out.print("Enter song title to play: ");
         String title = scanner.nextLine();
-        Song found = pickSongFromLibrary(title); 
+        Song found = pickSongFromLibrary(title);
         if (found == null) {
             System.out.println("That song is not in your library.");
         } else {
-            libraryModel.playSong(found); 
-            System.out.println("Playing '" + found.getTitle() + "'."); 
+            libraryModel.playSong(found);
+            System.out.println("Playing '" + found.getTitle() + "'.");
         }
-        goBackToMainMenu(); 
+        goBackToMainMenu();
     }
+
     public static void main(String[] args) {
         MusicStore store = new MusicStore();
         try {
@@ -589,10 +628,8 @@ public class View {
         } catch (IOException e) {
             System.out.println("Could not load albums from store: " + e.getMessage());
         }
-
         UserManager userManager = new UserManager(store);
         View view = new View(store, userManager);
         view.start();
     }
-    
 }

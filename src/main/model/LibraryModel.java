@@ -21,11 +21,11 @@ public class LibraryModel implements Serializable {
         this.recentPlays = new LinkedList<>();
         this.playCounts = new HashMap<>();
     }
-    
+
     public void setMusicStore(MusicStore musicStore) {
         this.musicStore = musicStore;
     }
-    
+
     public void addSongToLibrary(Song song) {
         if (musicStore.getAllSongs().contains(song)) {
             System.out.println("added " + song);
@@ -149,37 +149,56 @@ public class LibraryModel implements Serializable {
         }
         return new ArrayList<>(artistSet);
     }
-    
+
+    // New functionality: Return songs sorted by title (ascending, case-insensitive)
+    public List<Song> getSongsSortedByTitle() {
+        List<Song> sortedSongs = new ArrayList<>(userLibrary);
+        Collections.sort(sortedSongs, Comparator.comparing(Song::getTitle, String.CASE_INSENSITIVE_ORDER));
+        return sortedSongs;
+    }
+
+    // New functionality: Return songs sorted by artist (using the album's artist, ascending)
+    public List<Song> getSongsSortedByArtist() {
+        List<Song> sortedSongs = new ArrayList<>(userLibrary);
+        Collections.sort(sortedSongs, Comparator.comparing(song -> song.getAlbum().getArtist(), String.CASE_INSENSITIVE_ORDER));
+        return sortedSongs;
+    }
+
+    // New functionality: Return songs sorted by rating (ascending)
+    public List<Song> getSongsSortedByRating() {
+        List<Song> sortedSongs = new ArrayList<>(userLibrary);
+        Collections.sort(sortedSongs, Comparator.comparingInt(Song::getRating));
+        return sortedSongs;
+    }
+
+    // Tracking song plays functionality (Part B - for completeness)
     public void playSong(Song song) {
-        if (recentPlays.contains(song)) { // If song is already in recent plays remove it(A.D)
-            recentPlays.remove(song); 
+        if (recentPlays.contains(song)) {
+            recentPlays.remove(song); // If song is already in recent plays remove it(A.D)
         }
-        recentPlays.addFirst(song); 
+        recentPlays.addFirst(song);
         if (recentPlays.size() > 10) { // Ensure only last 10 are kept(A.D)
-            recentPlays.removeLast(); 
+            recentPlays.removeLast();
         }
-
         playCounts.put(song, playCounts.getOrDefault(song, 0) + 1);
-
         // Update automatic play list for recent plays(A.D)
-        Playlist recentPlaylist = new Playlist("Recent Plays"); 
-        for (Song s : recentPlays) { 
+        Playlist recentPlaylist = new Playlist("Recent Plays");
+        for (Song s : recentPlays) {
             recentPlaylist.addSong(s);
         }
         playlists.put("Recent Plays", recentPlaylist);
-
         // Update automatic playlist for top plays(A.D)
-        List<Map.Entry<Song, Integer>> entries = new ArrayList<>(playCounts.entrySet()); 
-        entries.sort((a, b) -> b.getValue().compareTo(a.getValue())); 
+        List<Map.Entry<Song, Integer>> entries = new ArrayList<>(playCounts.entrySet());
+        entries.sort((a, b) -> b.getValue().compareTo(a.getValue()));
         Playlist topPlaylist = new Playlist("Top Plays");
         int count = 0;
-        for (Map.Entry<Song, Integer> entry : entries) { 
+        for (Map.Entry<Song, Integer> entry : entries) {
             topPlaylist.addSong(entry.getKey());
             count++;
             if (count >= 10) {
-                break; 
-            } 
+                break;
+            }
         }
         playlists.put("Top Plays", topPlaylist);
-    } 
+    }
 }
