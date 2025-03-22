@@ -267,27 +267,34 @@ public class View {
         String query = scanner.nextLine();
 
         switch (choice) {
-            case "1":
-                List<Song> songsByTitle = musicStore.findSongsByTitle(query);
-                printSongsFromStore(songsByTitle);
+            case "1": {
+                List<Song> songs = musicStore.findSongsByTitle(query);
+                printSongsFromStore(songs);
+                offerAlbumInfoOption(songs, false); // this is the new prompt
                 break;
-            case "2":
+            }
+            case "2": {
                 List<Song> songsByArtist = musicStore.findSongsByArtist(query);
                 printSongsFromStore(songsByArtist);
                 break;
-            case "3":
+            }
+            case "3": {
                 List<Album> albumsByTitle = musicStore.findAlbumsByTitle(query);
                 printAlbumsFromStore(albumsByTitle);
                 break;
-            case "4":
+            }
+            case "4": {
                 List<Album> albumsByArtist = musicStore.findAlbumsByArtist(query);
                 printAlbumsFromStore(albumsByArtist);
                 break;
+            }
             default:
                 System.out.println("Invalid choice.");
         }
+
         goBackToMainMenu();
     }
+
 
     private void searchLibrary() {
         System.out.println("Search your library by: ");
@@ -303,10 +310,12 @@ public class View {
         String query = scanner.nextLine();
 
         switch (choice) {
-            case "1":
-                List<Song> songsTitle = libraryModel.searchSongsByTitle(query);
-                printLibrarySongs(songsTitle);
+            case "1": {
+                List<Song> songs = libraryModel.searchSongsByTitle(query);
+                printLibrarySongs(songs);
+                offerAlbumInfoOption(songs, true);
                 break;
+            }
             case "2":
                 List<Song> songsArtist = libraryModel.searchSongsByArtist(query);
                 printLibrarySongs(songsArtist);
@@ -332,7 +341,39 @@ public class View {
         }
         goBackToMainMenu();
     }
+    private void offerAlbumInfoOption(List<Song> songs, boolean isFromLibrary) {
+        if (songs == null || songs.isEmpty()) return;
 
+        System.out.print("Would you like to view more info? (y/n): ");
+        String resp = scanner.nextLine().trim().toLowerCase();
+        if (!resp.equals("y")) return;
+
+        Song selected = songs.get(0);
+        Album album = selected.getAlbum();
+
+        System.out.println("Album: " + album.getTitle());
+        System.out.println("Artist: " + album.getArtist());
+        System.out.println("Genre: " + album.getGenre());
+        System.out.println("Track List:");
+        for (Song s : album.getSongs()) {
+            System.out.println(" - " + s.getTitle());
+        }
+
+        // Check how many album songs are in the user's library
+        List<Song> userSongs = libraryModel.getAllSongs();
+        long countInLibrary = album.getSongs().stream()
+            .filter(userSongs::contains)
+            .count();
+
+        if (countInLibrary == album.getSongs().size()) {
+            System.out.println(" This album is in your library.");
+        } else if (countInLibrary > 0) {
+            System.out.println(" Some of this album is in your library.");
+        } else {
+            System.out.println(" This album is not in your library.");
+        }
+    }
+    
     private void addSongFromStore() {
         System.out.print("Enter song title to find in store: ");
         String title = scanner.nextLine();
@@ -394,7 +435,7 @@ public class View {
         }
         goBackToMainMenu();
     }
-
+    
     private void createPlaylist() {
         System.out.print("Enter playlist name: ");
         String playlistName = scanner.nextLine().trim();
