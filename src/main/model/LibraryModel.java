@@ -150,28 +150,27 @@ public class LibraryModel implements Serializable {
         return new ArrayList<>(artistSet);
     }
 
-    // New functionality: Return songs sorted by title (ascending, case-insensitive)
+    // Return songs sorted by title asc (NK)
     public List<Song> getSongsSortedByTitle() {
         List<Song> sortedSongs = new ArrayList<>(userLibrary);
         Collections.sort(sortedSongs, Comparator.comparing(Song::getTitle, String.CASE_INSENSITIVE_ORDER));
         return sortedSongs;
     }
 
-    // New functionality: Return songs sorted by artist (using the album's artist, ascending)
+    // Return songs sorted by artist ascending (NK)
     public List<Song> getSongsSortedByArtist() {
         List<Song> sortedSongs = new ArrayList<>(userLibrary);
         Collections.sort(sortedSongs, Comparator.comparing(song -> song.getAlbum().getArtist(), String.CASE_INSENSITIVE_ORDER));
         return sortedSongs;
     }
 
-    // New functionality: Return songs sorted by rating (ascending)
+    // Return songs sorted by rating ascending (NK)
     public List<Song> getSongsSortedByRating() {
         List<Song> sortedSongs = new ArrayList<>(userLibrary);
         Collections.sort(sortedSongs, Comparator.comparingInt(Song::getRating));
         return sortedSongs;
     }
 
-    // Tracking song plays functionality (Part B - for completeness)
     public void playSong(Song song) {
         if (recentPlays.contains(song)) {
             recentPlays.remove(song); // If song is already in recent plays remove it(A.D)
