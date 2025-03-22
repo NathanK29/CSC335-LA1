@@ -101,7 +101,7 @@ public class View {
             printMenu();
             command = scanner.nextLine().trim().toLowerCase();
             handleCommand(command);
-        } while (!command.equals("15") && !command.equals("exit"));
+        } while (!command.equals("16") && !command.equals("exit"));
     }
 
     private void printMenu() {
@@ -120,7 +120,8 @@ public class View {
         System.out.println(" 12) listartists           - List all artists in your library");
         System.out.println(" 13) listalbums            - List all albums in your library");
         System.out.println(" 14) listfavorites         - List favorite songs");
-        System.out.println(" 15) exit                  - Quit");
+        System.out.println(" 15) playsong              - Play a song from your library");
+        System.out.println(" 16) exit                  - Quit");
         System.out.print("Enter command (number or name): ");
     }
 
@@ -183,9 +184,14 @@ public class View {
                 listFavorites();
                 break;
             case "15":
+            case "playsong":
+                playSong();
+                break;
+            case "16":
             case "exit":
                 currentUser.saveLibraryData();
                 System.out.println("Exiting. Goodbye!");
+                System.exit(0);
                 break;
             default:
                 System.out.println("Unrecognized command.");
@@ -563,7 +569,19 @@ public class View {
             System.exit(0);
         }
     }
-
+    @SuppressWarnings("unused")
+	private void playSong() { 
+        System.out.print("Enter song title to play: ");
+        String title = scanner.nextLine();
+        Song found = pickSongFromLibrary(title); 
+        if (found == null) {
+            System.out.println("That song is not in your library.");
+        } else {
+            libraryModel.playSong(found); 
+            System.out.println("Playing '" + found.getTitle() + "'."); 
+        }
+        goBackToMainMenu(); 
+    }
     public static void main(String[] args) {
         MusicStore store = new MusicStore();
         try {
@@ -576,4 +594,5 @@ public class View {
         View view = new View(store, userManager);
         view.start();
     }
+    
 }

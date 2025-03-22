@@ -1,6 +1,7 @@
 package test.model;
 
 import main.model.LibraryModel;
+import main.model.Playlist;
 import main.database.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,4 +111,67 @@ public class LibraryModelTest {
         assertEquals(1, libraryModel.getFavoriteSongs().size());
         assertTrue(libraryModel.getFavoriteSongs().contains(song1));
     }
+    @Test
+    void testPlaySongUpdatesRecentPlays() {
+        libraryModel.addSongToLibrary(song1);
+        libraryModel.addSongToLibrary(song2);
+
+        libraryModel.playSong(song1);
+        libraryModel.playSong(song2);
+        libraryModel.playSong(song1);
+
+        Playlist recentPlaylist = libraryModel.findPlaylistByName("Recent Plays");
+        assertNotNull(recentPlaylist, "Recent Plays playlist should exist.");
+
+        List<Song> recentSongs = recentPlaylist.getSongs();
+        assertEquals(2, recentSongs.size(), "There should be two songs in Recent Plays.");
+        assertEquals(song1, recentSongs.get(0), "Most recent song should be Song 1.");
+        assertEquals(song2, recentSongs.get(1), "Second song should be Song 2.");
+    }
+
+    @Test
+    void testPlaySongUpdatesTopPlays() {
+        libraryModel.addSongToLibrary(song1);
+        libraryModel.addSongToLibrary(song2);
+
+        libraryModel.playSong(song1);
+        libraryModel.playSong(song2);
+        libraryModel.playSong(song1);
+        libraryModel.playSong(song2);
+        libraryModel.playSong(song1);
+
+        Playlist topPlaylist = libraryModel.findPlaylistByName("Top Plays");
+        assertNotNull(topPlaylist, "Top Plays playlist should exist.");
+
+        List<Song> topSongs = topPlaylist.getSongs();
+        assertEquals(2, topSongs.size(), "There should be 2 songs in Top Plays.");
+        assertEquals(song1, topSongs.get(0), "Top song should be Song 1.");
+        assertEquals(song2, topSongs.get(1), "Seond top song should be Song 2.");
+    }
+
+    @Test
+    void testRecentPlaysLimit() {
+        Album extraAlbum = new Album("Extra Album", "Extra Artist", "Pop", 2023);
+        int extraCount = 11;
+        Song[] extraSongs = new Song[extraCount];
+        for (int i = 0; i < extraCount; i++) {
+            extraSongs[i] = new Song("Extra Song " + i, extraAlbum);
+            extraAlbum.addSong(extraSongs[i]);
+            musicStore.addSong(extraSongs[i]);
+            libraryModel.addSongToLibrary(extraSongs[i]);
+        }
+
+        for (int i = 0; i < extraCount; i++) {
+            libraryModel.playSong(extraSongs[i]);
+        }
+
+        Playlist recentPlaylist = libraryModel.findPlaylistByName("Recent Plays");
+        assertNotNull(recentPlaylist, "Recent Plays playlist should exist.");
+        List<Song> recentSongs = recentPlaylist.getSongs();
+        assertEquals(10, recentSongs.size(), "Recent Plays playlist should only keep ten songs.");
+        assertEquals("Extra Song 10", recentSongs.get(0).getTitle(), "Most recent song should be Extra Song 10.");
+        assertEquals("Extra Song 1", recentSongs.get(9).getTitle(), "Oldest song in recent plays should be Extra Song 1.");
+    }
+
+
 }

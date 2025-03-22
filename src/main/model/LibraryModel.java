@@ -10,18 +10,22 @@ public class LibraryModel implements Serializable {
     private Map<String, Playlist> playlists;
     private List<Song> favoriteSongs;
     private transient MusicStore musicStore;
+    private LinkedList<Song> recentPlays; //  Added for tracking recent plays (A.D)
+    private Map<Song, Integer> playCounts; // Added for tracking play counts (A.D)
 
     public LibraryModel(MusicStore musicStore) {
         this.musicStore = musicStore;
         this.userLibrary = new ArrayList<>();
         this.playlists = new HashMap<>();
         this.favoriteSongs = new ArrayList<>();
+        this.recentPlays = new LinkedList<>();
+        this.playCounts = new HashMap<>();
     }
-
+    
     public void setMusicStore(MusicStore musicStore) {
         this.musicStore = musicStore;
     }
-
+    
     public void addSongToLibrary(Song song) {
         if (musicStore.getAllSongs().contains(song)) {
             System.out.println("added " + song);
@@ -145,4 +149,37 @@ public class LibraryModel implements Serializable {
         }
         return new ArrayList<>(artistSet);
     }
+    
+    public void playSong(Song song) {
+        if (recentPlays.contains(song)) { // If song is already in recent plays remove it(A.D)
+            recentPlays.remove(song); 
+        }
+        recentPlays.addFirst(song); 
+        if (recentPlays.size() > 10) { // Ensure only last 10 are kept(A.D)
+            recentPlays.removeLast(); 
+        }
+
+        playCounts.put(song, playCounts.getOrDefault(song, 0) + 1);
+
+        // Update automatic play list for recent plays(A.D)
+        Playlist recentPlaylist = new Playlist("Recent Plays"); 
+        for (Song s : recentPlays) { 
+            recentPlaylist.addSong(s);
+        }
+        playlists.put("Recent Plays", recentPlaylist);
+
+        // Update automatic playlist for top plays(A.D)
+        List<Map.Entry<Song, Integer>> entries = new ArrayList<>(playCounts.entrySet()); 
+        entries.sort((a, b) -> b.getValue().compareTo(a.getValue())); 
+        Playlist topPlaylist = new Playlist("Top Plays");
+        int count = 0;
+        for (Map.Entry<Song, Integer> entry : entries) { 
+            topPlaylist.addSong(entry.getKey());
+            count++;
+            if (count >= 10) {
+                break; 
+            } 
+        }
+        playlists.put("Top Plays", topPlaylist);
+    } 
 }
