@@ -309,6 +309,7 @@ public class View {
         System.out.print("Enter your search string: ");
         String query = scanner.nextLine();
 
+        
         switch (choice) {
             case "1": {
                 List<Song> songs = libraryModel.searchSongsByTitle(query);
