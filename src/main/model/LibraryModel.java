@@ -31,6 +31,7 @@ public class LibraryModel implements Serializable {
             System.out.println("added " + song);
             userLibrary.add(song);
         }
+        updateAutomaticPlaylists();
     }
 
     public void addAlbumToLibrary(Album album) {
@@ -57,6 +58,7 @@ public class LibraryModel implements Serializable {
         if (!favoriteSongs.contains(song)) {
             favoriteSongs.add(song);
         }
+        updateAutomaticPlaylists();
     }
 
     public void removeSongFromPlaylist(String playlistName, Song song) {
@@ -74,6 +76,7 @@ public class LibraryModel implements Serializable {
         if (rating == 5) {
             markSongAsFavorite(song);
         }
+        updateAutomaticPlaylists();
     }
 
     public List<Song> searchSongsByTitle(String title) {
@@ -164,10 +167,17 @@ public class LibraryModel implements Serializable {
         return sortedSongs;
     }
 
+    public Iterable<Song> getShuffledSongs() {
+        List<Song> copy = new ArrayList<>(userLibrary);
+        Collections.shuffle(copy);
+        return copy;
+    }
+
     public void removeSongFromLibrary(Song song) {
         if(userLibrary.contains(song)) {
             userLibrary.remove(song);
         }
+        updateAutomaticPlaylists();
     }
 
     public void removeAlbumFromLibrary(Album album) {
@@ -178,7 +188,8 @@ public class LibraryModel implements Serializable {
                 songsToRemove.add(s);
             }
         }
-        userLibrary.removeAll(songsToRemove);
+       userLibrary.removeAll(songsToRemove);
+       updateAutomaticPlaylists();
     }
 
     // Return songs sorted by rating ascending (NK)
@@ -216,5 +227,53 @@ public class LibraryModel implements Serializable {
             }
         }
         playlists.put("Top Plays", topPlaylist);
+    }
+    
+   
+    private void updateFavoritePlaylist() {
+        Playlist favorites = new Playlist("Favorite Songs");
+        for (Song s : userLibrary) {
+            if (favoriteSongs.contains(s) || s.getRating() == 5) {
+                favorites.addSong(s);
+            }
+        }
+        playlists.put("Favorite Songs", favorites);
+    }
+    
+    private void updateTopRatedPlaylist() {
+        Playlist topRated = new Playlist("Top Rated");
+        for (Song s : userLibrary) {
+            if (s.getRating() >= 4) {
+                topRated.addSong(s);
+            }
+        }
+        playlists.put("Top Rated", topRated);
+    }
+    
+    private void updateGenrePlaylists() {
+        Map<String, List<Song>> genreMap = new HashMap<>();
+        for (Song s : userLibrary) {
+            String genre = s.getAlbum().getGenre();
+            genreMap.computeIfAbsent(genre, k -> new ArrayList<>()).add(s);
+        }
+
+        for (Map.Entry<String, List<Song>> entry : genreMap.entrySet()) {
+            String genre = entry.getKey();
+            List<Song> songs = entry.getValue();
+            if (songs.size() >= 10) {
+                Playlist genrePlaylist = new Playlist(genre + " Playlist");
+                for (Song s : songs) {
+                    genrePlaylist.addSong(s);
+                }
+                playlists.put(genre + " Playlist", genrePlaylist);
+            }
+        }
+    }
+    
+    @SuppressWarnings("unused")
+	private void updateAutomaticPlaylists() {
+        updateFavoritePlaylist();
+        updateTopRatedPlaylist();
+        updateGenrePlaylists();
     }
 }

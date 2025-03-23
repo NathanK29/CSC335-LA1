@@ -9,6 +9,7 @@ import main.model.LibraryModel;
 import main.model.Playlist;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -296,35 +297,46 @@ public class View {
         System.out.println("  2) Song artist");
         System.out.println("  3) Album title");
         System.out.println("  4) Album artist");
-        System.out.print("Enter choice (1-4): ");
+        System.out.println("  5) Genre");
+        System.out.print("Enter choice (1-5): ");
         String choice = scanner.nextLine().trim();
         System.out.print("Enter your search string: ");
         String query = scanner.nextLine();
         switch (choice) {
-            case "1": {
-                List<Song> songs = musicStore.findSongsByTitle(query);
-                printSongsFromStore(songs);
-                offerAlbumInfoOption(songs, false); // this is the new prompt
-                break;
-            }
-            case "2": {
-                List<Song> songsByArtist = musicStore.findSongsByArtist(query);
-                printSongsFromStore(songsByArtist);
-                break;
-            }
-            case "3": {
-                List<Album> albumsByTitle = musicStore.findAlbumsByTitle(query);
-                printAlbumsFromStore(albumsByTitle);
-                break;
-            }
-            case "4": {
-                List<Album> albumsByArtist = musicStore.findAlbumsByArtist(query);
-                printAlbumsFromStore(albumsByArtist);
-                break;
-            }
-            default:
-                System.out.println("Invalid choice.");
+        case "1": {
+            List<Song> songs = musicStore.findSongsByTitle(query);
+            printSongsFromStore(songs);
+            offerAlbumInfoOption(songs, false);
+            break;
         }
+        case "2": {
+            List<Song> songsByArtist = musicStore.findSongsByArtist(query);
+            printSongsFromStore(songsByArtist);
+            break;
+        }
+        case "3": {
+            List<Album> albumsByTitle = musicStore.findAlbumsByTitle(query);
+            printAlbumsFromStore(albumsByTitle);
+            break;
+        }
+        case "4": {
+            List<Album> albumsByArtist = musicStore.findAlbumsByArtist(query);
+            printAlbumsFromStore(albumsByArtist);
+            break;
+        }
+        case "5": {
+            List<Song> songsByGenre = new ArrayList<>();
+            for (Album album : musicStore.getAllAlbums()) {
+                if (album.getGenre().equalsIgnoreCase(query)) {
+                    songsByGenre.addAll(album.getSongs());
+                }
+            }
+            printSongsFromStore(songsByGenre);
+            break;
+        }
+        default:
+            System.out.println("Invalid choice.");
+    }
 
         goBackToMainMenu();
     }
@@ -599,7 +611,18 @@ public class View {
         } else {
             System.out.println("Your playlists:");
             for (Playlist p : pls) {
-                System.out.println(" - " + p.getName() + " (" + p.getSongs().size() + " songs)");
+                String name = p.getName();
+                boolean isAuto = name.equals("Favorite Songs") || 
+                                 name.equals("Top Rated") || 
+                                 name.equals("Recent Plays") || 
+                                 name.equals("Top Plays") || 
+                                 name.endsWith(" Playlist");
+
+                if (isAuto) {
+                    System.out.println(" * " + name + " (Auto, " + p.getSongs().size() + " songs)");
+                } else {
+                    System.out.println(" - " + name + " (" + p.getSongs().size() + " songs)");
+                }
             }
         }
         goBackToMainMenu();
@@ -696,17 +719,51 @@ public class View {
         }
     }
 
-    @SuppressWarnings("unused")
     private void playSong() {
-        System.out.print("Enter song title to play: ");
-        String title = scanner.nextLine();
-        Song found = pickSongFromLibrary(title);
-        if (found == null) {
-            System.out.println("That song is not in your library.");
-        } else {
-            libraryModel.playSong(found);
-            System.out.println("Playing '" + found.getTitle() + "'.");
+        System.out.println("Play Song Menu:");
+        System.out.println("  1) Play a song from your library");
+        System.out.println("  2) View recently played songs");
+        System.out.println("  3) View most played songs");
+        System.out.print("Enter choice (1-3): ");
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1": {
+                System.out.print("Enter song title to play: ");
+                String title = scanner.nextLine();
+                Song found = pickSongFromLibrary(title);
+                if (found == null) {
+                    System.out.println("That song is not in your library.");
+                } else {
+                    libraryModel.playSong(found);
+                    System.out.println("Playing '" + found.getTitle() + "'.");
+                }
+                break;
+            }
+            case "2": {
+                Playlist recent = libraryModel.findPlaylistByName("Recent Plays");
+                if (recent == null || recent.getSongs().isEmpty()) {
+                    System.out.println("No recently played songs.");
+                } else {
+                    System.out.println("Recently Played Songs:");
+                    printPlaylistDetails(recent);
+                }
+                break;
+            }
+            case "3": {
+                Playlist top = libraryModel.findPlaylistByName("Top Plays");
+                if (top == null || top.getSongs().isEmpty()) {
+                    System.out.println("No frequently played songs.");
+                } else {
+                    System.out.println("Most Frequently Played Songs:");
+                    printPlaylistDetails(top);
+                }
+                break;
+            }
+            default:
+                System.out.println("Invalid choice.");
         }
+
         goBackToMainMenu();
     }
 
