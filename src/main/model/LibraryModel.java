@@ -21,17 +21,22 @@ public class LibraryModel implements Serializable {
         this.recentPlays = new LinkedList<>();
         this.playCounts = new HashMap<>();
     }
+   
+	private boolean isTestMode = false; // added to endabletest mode for our testcases(A.D)
 
+    public void enableTestMode() {
+        this.isTestMode = true;
+    }
+   
     public void setMusicStore(MusicStore musicStore) {
         this.musicStore = musicStore;
     }
-
+    // In test mode, skip this check so we can add test songs directly. (A.D)
     public void addSongToLibrary(Song song) {
-        if (musicStore.getAllSongs().contains(song)) {
-            System.out.println("added " + song);
+        if (isTestMode || (musicStore != null && musicStore.getAllSongs().contains(song))) {
             userLibrary.add(song);
+            updateAutomaticPlaylists();
         }
-        updateAutomaticPlaylists();
     }
 
     public void addAlbumToLibrary(Album album) {
@@ -270,7 +275,6 @@ public class LibraryModel implements Serializable {
         }
     }
     
-    @SuppressWarnings("unused")
 	private void updateAutomaticPlaylists() {
         updateFavoritePlaylist();
         updateTopRatedPlaylist();

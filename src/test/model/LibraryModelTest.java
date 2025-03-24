@@ -177,12 +177,18 @@ public class LibraryModelTest {
 
     @Test
     void testSongsSortedByTitle() {
+        libraryModel = new LibraryModel(null);
+        libraryModel.enableTestMode();
+
+        Album testAlbum = new Album("Test Album", "Test Artist", "POP", 2022);
         Song sA = new Song("Alpha", testAlbum);
         Song sC = new Song("Charlie", testAlbum);
         Song sB = new Song("Bravo", testAlbum);
+
         libraryModel.addSongToLibrary(sA);
         libraryModel.addSongToLibrary(sC);
         libraryModel.addSongToLibrary(sB);
+
         List<Song> sorted = libraryModel.getSongsSortedByTitle();
         assertEquals("Alpha", sorted.get(0).getTitle());
         assertEquals("Bravo", sorted.get(1).getTitle());
@@ -191,12 +197,17 @@ public class LibraryModelTest {
 
     @Test
     void testSongsSortedByArtist() {
+        libraryModel = new LibraryModel(null);
+        libraryModel.enableTestMode();
+
         Album albumA = new Album("Album A", "Artist A", "Genre", 2023);
         Album albumB = new Album("Album B", "Artist B", "Genre", 2023);
         Song songA = new Song("Song", albumB);
         Song songB = new Song("Song", albumA);
+
         libraryModel.addSongToLibrary(songA);
         libraryModel.addSongToLibrary(songB);
+
         List<Song> sorted = libraryModel.getSongsSortedByArtist();
         assertEquals("Artist A", sorted.get(0).getAlbum().getArtist());
         assertEquals("Artist B", sorted.get(1).getAlbum().getArtist());
@@ -204,12 +215,19 @@ public class LibraryModelTest {
 
     @Test
     void testSongsSortedByRating() {
+        libraryModel = new LibraryModel(null);
+        libraryModel.enableTestMode();
+
+        Album testAlbum = new Album("Test Album", "Test Artist", "POP", 2022);
         Song songLow = new Song("Low Rated", testAlbum);
         Song songHigh = new Song("High Rated", testAlbum);
+
         libraryModel.addSongToLibrary(songLow);
         libraryModel.addSongToLibrary(songHigh);
-        songLow.setRating(2);
-        songHigh.setRating(5);
+
+        libraryModel.rateSong(songLow, 2);
+        libraryModel.rateSong(songHigh, 5);
+
         List<Song> sorted = libraryModel.getSongsSortedByRating();
         assertEquals(2, sorted.get(0).getRating());
         assertEquals(5, sorted.get(1).getRating());
@@ -230,12 +248,63 @@ public class LibraryModelTest {
     }
 
     @Test
+    void testGetAllArtistsInLibrary_UniqueArtists() {
+        Album anotherAlbum = new Album("Another", "Another Artist", "Rock", 2023);
+        Song otherSong = new Song("Other Song", anotherAlbum);
+        anotherAlbum.addSong(otherSong);
+        musicStore.addAlbum(anotherAlbum);
+        musicStore.addSong(otherSong);
+
+        libraryModel.addSongToLibrary(song1);
+        libraryModel.addSongToLibrary(otherSong);
+
+        List<String> artists = libraryModel.getAllArtistsInLibrary();
+        assertEquals(2, artists.size());
+        assertTrue(artists.contains("Test Artist"));
+        assertTrue(artists.contains("Another Artist"));
+    }
+    
+    @Test
+    void testGetAllAlbumsInLibrary_DeduplicatesAlbums() {
+        libraryModel.addSongToLibrary(song1);
+        libraryModel.addSongToLibrary(song2);
+
+        List<Album> albums = libraryModel.getAllAlbumsInLibrary();
+        assertEquals(1, albums.size());
+        assertTrue(albums.contains(testAlbum));
+    }
+    
+    @Test
+    void testSearchSongsByArtist_NoMatch() {
+        libraryModel.addSongToLibrary(song1);
+
+        List<Song> results1 = libraryModel.searchSongsByArtist("test artist");
+        assertEquals(1, results1.size());
+        assertTrue(results1.contains(song1));
+
+        List<Song> results2 = libraryModel.searchSongsByArtist("Unknown Artist");
+        assertTrue(results2.isEmpty());
+    }
+    @Test
     void testRemoveSongFromLibrary() {
         libraryModel.addSongToLibrary(song1);
         libraryModel.removeSongFromLibrary(song1);
         assertFalse(libraryModel.getAllSongs().contains(song1));
     }
+   
+    @Test
+    void testSearchAlbumsByArtist_NoMatch() {
+        libraryModel.addSongToLibrary(song1);
+        libraryModel.addSongToLibrary(song2); 
 
+        List<Album> results1 = libraryModel.searchAlbumsByArtist("TEST ARTIST");
+        assertEquals(1, results1.size());
+        assertEquals(testAlbum, results1.get(0));
+
+        List<Album> results2 = libraryModel.searchAlbumsByArtist("Nonexistent Artist");
+        assertTrue(results2.isEmpty());
+    }
+  
     @Test
     void testRemoveAlbumFromLibrary() {
         libraryModel.addAlbumToLibrary(testAlbum);
