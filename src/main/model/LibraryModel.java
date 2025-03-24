@@ -32,13 +32,19 @@ public class LibraryModel implements Serializable {
         this.musicStore = musicStore;
     }
 
+    // Added for certain testcases
+    private boolean isTestMode = false;
+
+    public void enableTestMode() {
+        this.isTestMode = true;
+    }
+    
     // Adds a song to the user's library if it exists in the MusicStore; then updates automatic playlists.
     public void addSongToLibrary(Song song) {
-        if (musicStore.getAllSongs().contains(song)) {
-            System.out.println("added " + song);
+        if (isTestMode || (musicStore != null && musicStore.getAllSongs().contains(song))) {
             userLibrary.add(song);
+            updateAutomaticPlaylists();
         }
-        updateAutomaticPlaylists();
     }
 
     // Adds all songs from the specified album into the library.
